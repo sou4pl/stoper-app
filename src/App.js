@@ -1,39 +1,54 @@
 import Container  from './components/Container/Container.js';
 import Button from './components/Button/Button.js'
 import Timer from './components/Timer/Timer.js';
-import { useState} from 'react';
+import { useState, useEffect } from 'react';
 
 const App = () => {
-
-
-  const [time, setTime] = useState('');
-  const [timer, setTimer] = useState('');
-  const formatedTime = {};
+  const [time, setTime] = useState(0);
+  const [timer, setTimer] = useState(null);
   
   const start = () => {
-    console.log('start!')
-    setInterval(() => {
-    //setTimer(setInterval(() => {
+    if(!timer){
+      //console.log('start!')
+      setTimer(setInterval(() => {
       setTime(prevValue => prevValue + 1);
-      formatTime(time);
-    }, 1000)
+      }, 1))}
   };
 
-const formatTime = time =>
-  formatedTime.hours = time;
-  formatedTime.minutes = 0;
-  formatedTime.seconds = 0;
-  formatedTime.miliseconds = 666;
+  const stop = () => {
+    //console.log('stop!')
+    clearInterval(timer);
+    setTimer();
+  };
 
-  start();
+  const reset = () => {
+    if (timer){
+      //console.log('reset w trakcie!');
+      clearInterval(timer);
+      setTime(0);
+      setTimer(null);
+      setTimer(setInterval(() => {
+        setTime(prevValue => prevValue + 1);
+        }, 1))
+    }else{ 
+      //console.log('reset!');
+      setTime(0);
+      setTimer(null);
+    };
+  };
 
+  useEffect(() => {
+    return () => {
+       if(timer) clearInterval(timer);
+    };
+  }, []);
 
   return (
     <Container>
-      <Timer hours={formatedTime.hours} minutes={formatedTime.minutes} seconds={formatedTime.seconds} miliseconds = {formatedTime.miliseconds} />
-      <Button>start</Button>
-      <Button>stop</Button>
-      <Button>reset</Button>
+      <Timer time={time} />
+      <Button value={start}>start</Button>
+      <Button value={stop}>stop</Button>
+      <Button value={reset}>reset</Button>
     </Container>
   );
 };
